@@ -410,6 +410,17 @@ fn detect_project_type(path: &Path) -> Option<GeneratorOutputType> {
         return Some(GeneratorOutputType::Go);
     }
 
+    // Check for C# project (.csproj files)
+    if let Ok(entries) = std::fs::read_dir(path) {
+        for entry in entries.flatten() {
+            if let Some(file_name) = entry.file_name().to_str() {
+                if file_name.ends_with(".csproj") {
+                    return Some(GeneratorOutputType::CSharpMetadata);
+                }
+            }
+        }
+    }
+
     None
 }
 
@@ -657,7 +668,7 @@ fn generate_main_baml_content(
 // your choice. You can have multiple generators if you use multiple languages.
 // Just ensure that the output_dir is different for each generator.
 generator target {{
-    // Valid values: "python/pydantic", "typescript", "ruby/sorbet", "rest/openapi"
+    // Valid values: "python/pydantic", "typescript", "ruby/sorbet", "rest/openapi", "go", "csharp/metadata"
     output_type "{output_type}"
 
     // Where the generated code will be saved (relative to baml_src/)

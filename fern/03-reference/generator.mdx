@@ -125,6 +125,18 @@ generator target {
 }
 ```
 
+```baml C# (Metadata)
+generator target {
+    output_type "csharp/metadata"
+
+    // Where the generated code will be saved (relative to baml_src/)
+    output_dir "../"
+
+    // Version of runtime to generate code for (should match installed BoundaryML.Baml.Native.* package version)
+    version "0.205.0"
+}
+```
+
 ```baml OpenAPI
 generator target {
     output_type "rest/openapi"
