@@ -1,0 +1,478 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://boundaryml.com/schemas/baml-metadata-v1.json",
+  "title": "BAML C# Metadata Schema",
+  "description": "JSON Schema for BAML C# metadata files generated for source generator consumption",
+  "type": "object",
+  "required": ["version", "namespace", "types", "functions", "typeAliases", "clients", "retryPolicies"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "examples": ["1.0.0"]
+    },
+    "namespace": {
+      "type": "string",
+      "description": "C# namespace for generated code",
+      "minLength": 1,
+      "examples": ["BamlClient"]
+    },
+    "types": {
+      "type": "array",
+      "description": "Type definitions (enums, classes, records)",
+      "items": {
+        "$ref": "#/definitions/TypeDefinition"
+      }
+    },
+    "functions": {
+      "type": "array",
+      "description": "BAML function definitions",
+      "items": {
+        "$ref": "#/definitions/FunctionDefinition"
+      }
+    },
+    "typeAliases": {
+      "type": "array",
+      "description": "Type alias definitions",
+      "items": {
+        "$ref": "#/definitions/TypeAliasDefinition"
+      }
+    },
+    "clients": {
+      "type": "array",
+      "description": "LLM client configurations",
+      "items": {
+        "$ref": "#/definitions/ClientDefinition"
+      }
+    },
+    "retryPolicies": {
+      "type": "array",
+      "description": "Retry policy configurations",
+      "items": {
+        "$ref": "#/definitions/RetryPolicyDefinition"
+      }
+    }
+  },
+  "definitions": {
+    "TypeDefinition": {
+      "type": "object",
+      "required": ["name", "kind", "isDynamic"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Type name in PascalCase",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["Enum", "Record", "Class"],
+          "description": "Type classification"
+        },
+        "summary": {
+          "type": "string",
+          "description": "Brief summary for documentation"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description for documentation"
+        },
+        "alias": {
+          "type": "string",
+          "description": "Alternative name for serialization"
+        },
+        "properties": {
+          "type": "array",
+          "description": "Properties for Record/Class types",
+          "items": {
+            "$ref": "#/definitions/PropertyDefinition"
+          }
+        },
+        "values": {
+          "type": "array",
+          "description": "Values for Enum types",
+          "items": {
+            "$ref": "#/definitions/EnumValueDefinition"
+          }
+        },
+        "isDynamic": {
+          "type": "boolean",
+          "description": "Whether the type is dynamically defined"
+        },
+        "constraints": {
+          "type": "array",
+          "description": "Validation constraints",
+          "items": {
+            "$ref": "#/definitions/ConstraintDefinition"
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "kind": { "const": "Enum" }
+          },
+          "required": ["values"]
+        },
+        {
+          "properties": {
+            "kind": { "enum": ["Record", "Class"] }
+          },
+          "required": ["properties"]
+        }
+      ]
+    },
+    "PropertyDefinition": {
+      "type": "object",
+      "required": ["name", "type", "nullable"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Property name in PascalCase",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "description": "C# type name (e.g., 'string', 'int', 'List<string>')",
+          "minLength": 1
+        },
+        "nullable": {
+          "type": "boolean",
+          "description": "Whether the property can be null"
+        },
+        "summary": {
+          "type": "string",
+          "description": "Brief summary for documentation"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description for documentation"
+        },
+        "alias": {
+          "type": "string",
+          "description": "Alternative name for serialization"
+        },
+        "defaultValue": {
+          "description": "Default value for the property"
+        },
+        "constraints": {
+          "type": "array",
+          "description": "Validation constraints",
+          "items": {
+            "$ref": "#/definitions/ConstraintDefinition"
+          }
+        }
+      }
+    },
+    "EnumValueDefinition": {
+      "type": "object",
+      "required": ["name", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Enum value name in PascalCase",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "description": "String representation of the enum value",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "description": "Brief summary for documentation"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description for documentation"
+        },
+        "alias": {
+          "type": "string",
+          "description": "Alternative name for serialization"
+        }
+      }
+    },
+    "FunctionDefinition": {
+      "type": "object",
+      "required": ["name", "async", "parameters", "returnType", "returnNullable"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Function name in PascalCase",
+          "minLength": 1
+        },
+        "async": {
+          "type": "boolean",
+          "description": "Whether the function is asynchronous"
+        },
+        "summary": {
+          "type": "string",
+          "description": "Brief summary for documentation"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description for documentation"
+        },
+        "parameters": {
+          "type": "array",
+          "description": "Function parameters",
+          "items": {
+            "$ref": "#/definitions/ParameterDefinition"
+          }
+        },
+        "returnType": {
+          "type": "string",
+          "description": "Return type name",
+          "minLength": 1
+        },
+        "returnNullable": {
+          "type": "boolean",
+          "description": "Whether the return type can be null"
+        },
+        "returnSummary": {
+          "type": "string",
+          "description": "Documentation for the return value"
+        },
+        "defaultClient": {
+          "type": "string",
+          "description": "Name of the default client to use"
+        },
+        "tests": {
+          "type": "array",
+          "description": "Test cases for this function",
+          "items": {
+            "$ref": "#/definitions/TestCaseDefinition"
+          }
+        }
+      }
+    },
+    "ParameterDefinition": {
+      "type": "object",
+      "required": ["name", "type", "nullable"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Parameter name in camelCase",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "description": "C# type name",
+          "minLength": 1
+        },
+        "nullable": {
+          "type": "boolean",
+          "description": "Whether the parameter can be null"
+        },
+        "summary": {
+          "type": "string",
+          "description": "Brief summary for documentation"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description for documentation"
+        },
+        "defaultValue": {
+          "description": "Default value for the parameter"
+        }
+      }
+    },
+    "TypeAliasDefinition": {
+      "type": "object",
+      "required": ["name", "aliasFor"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Alias name in PascalCase",
+          "minLength": 1
+        },
+        "aliasFor": {
+          "type": "string",
+          "description": "The type this is an alias for",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "description": "Brief summary for documentation"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description for documentation"
+        }
+      }
+    },
+    "ConstraintDefinition": {
+      "type": "object",
+      "required": ["type", "expression"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["Assert", "Check"],
+          "description": "Constraint type"
+        },
+        "expression": {
+          "type": "string",
+          "description": "Constraint expression",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "description": "Label for the constraint"
+        },
+        "message": {
+          "type": "string",
+          "description": "Error message if constraint fails"
+        }
+      }
+    },
+    "ClientDefinition": {
+      "type": "object",
+      "required": ["name", "provider"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Client name in PascalCase",
+          "minLength": 1
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "openai",
+            "anthropic",
+            "aws-bedrock",
+            "google-ai",
+            "vertex-ai",
+            "ollama",
+            "azure-openai",
+            "openai-responses",
+            "openai-generic",
+            "strategy"
+          ],
+          "description": "LLM provider type"
+        },
+        "retryPolicy": {
+          "type": "string",
+          "description": "Name of the retry policy to use"
+        },
+        "options": {
+          "type": "object",
+          "description": "Provider-specific configuration options",
+          "additionalProperties": true
+        },
+        "summary": {
+          "type": "string",
+          "description": "Brief summary for documentation"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description for documentation"
+        }
+      }
+    },
+    "RetryPolicyDefinition": {
+      "type": "object",
+      "required": ["name", "maxRetries", "strategy"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Retry policy name",
+          "minLength": 1
+        },
+        "maxRetries": {
+          "type": "integer",
+          "description": "Maximum number of retry attempts",
+          "minimum": 0
+        },
+        "strategy": {
+          "type": "string",
+          "enum": ["ConstantDelay", "ExponentialBackoff"],
+          "description": "Retry strategy type"
+        },
+        "options": {
+          "type": "object",
+          "description": "Strategy-specific configuration",
+          "additionalProperties": false,
+          "properties": {
+            "delayMs": {
+              "type": "integer",
+              "description": "Delay in milliseconds",
+              "minimum": 0
+            },
+            "multiplier": {
+              "type": "number",
+              "description": "Backoff multiplier (for ExponentialBackoff)",
+              "minimum": 1.0
+            },
+            "maxDelayMs": {
+              "type": "integer",
+              "description": "Maximum delay in milliseconds (for ExponentialBackoff)",
+              "minimum": 0
+            }
+          },
+          "required": ["delayMs"],
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "strategy": { "const": "ExponentialBackoff" }
+                }
+              },
+              "then": {
+                "required": ["delayMs", "multiplier", "maxDelayMs"]
+              }
+            }
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "description": "Brief summary for documentation"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description for documentation"
+        }
+      }
+    },
+    "TestCaseDefinition": {
+      "type": "object",
+      "required": ["name", "arguments"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Test case name",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "description": "Test case description"
+        },
+        "arguments": {
+          "type": "object",
+          "description": "Function arguments for this test",
+          "additionalProperties": true
+        },
+        "expectedResult": {
+          "description": "Expected result value"
+        },
+        "constraints": {
+          "type": "array",
+          "description": "Constraints to validate against",
+          "items": {
+            "$ref": "#/definitions/ConstraintDefinition"
+          }
+        }
+      }
+    }
+  }
+}

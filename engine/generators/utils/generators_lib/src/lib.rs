@@ -46,6 +46,11 @@ pub fn generate_sdk(
             let features = RbLanguageFeatures::default();
             features.generate_sdk(ir, gen)?
         }
+        GeneratorOutputType::CSharpMetadata => {
+            use generators_csharp_metadata::CSharpMetadataLanguageFeatures;
+            let features = CSharpMetadataLanguageFeatures;
+            features.generate_sdk(ir, gen)?
+        }
     };
 
     // Run on_generate commands

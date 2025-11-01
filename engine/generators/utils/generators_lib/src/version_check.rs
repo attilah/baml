@@ -125,6 +125,9 @@ pub fn check_version(
                 GeneratorOutputType::Go => {
                     format!("go install github.com/boundaryml/baml/go@{gen_version}")
                 }
+                GeneratorOutputType::CSharpMetadata => {
+                    format!("regenerate metadata with 'npx @boundaryml/baml@{gen_version} generate'")
+                }
             };
             (
                 match generator_type {

@@ -16,7 +16,9 @@
     "NIX_*",
     "CC",
     "LD",
-    "MACOSX_DEPLOYMENT_TARGET"
+    "MACOSX_DEPLOYMENT_TARGET",
+    "RUSTUP_HOME",
+    "CARGO_HOME"
   ],
   "globalEnv": ["VSCODE_DEBUG_MODE"],
   "globalDependencies": [

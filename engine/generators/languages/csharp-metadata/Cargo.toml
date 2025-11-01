@@ -1,0 +1,23 @@
+[package]
+edition = "2021"
+name = "generators-csharp-metadata"
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+license-file.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+dir-writer = { path = "../../utils/dir_writer" }
+internal-baml-core = { path = "../../../baml-lib/baml-core" }
+internal-baml-parser-database = { path = "../../../baml-lib/parser-database" }
+internal-llm-client = { path = "../../../baml-lib/llm-client" }
+baml-types = { path = "../../../baml-lib/baml-types" }
+indexmap.workspace = true
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+convert_case = "0.6.0"
+
+[dev-dependencies]
+prettydiff = "0.8.0"
+test-harness = { path = "../../utils/test_harness" }
